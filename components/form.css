@@ -1,0 +1,63 @@
+/* ============================================
+    FORMULARIO
+============================================ */
+
+.form-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.form__group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form__label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.form__input {
+    width: 100%;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    outline: none;
+}
+
+.form__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+.form__input::placeholder {
+    color: var(--color-gray-400);
+}
+
+.form__textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form__input.error {
+    border-color: var(--color-error);
+}
+
+.form__input.error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form__error {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+    margin-top: var(--spacing-xs);
+    min-height: 1.25rem;
+    font-weight: var(--font-weight-medium);
+}
