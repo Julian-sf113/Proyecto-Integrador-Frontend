@@ -34,7 +34,14 @@ let totalTareas = 0;
 let editandoId = null;
 
 const reglasBusqueda = {
-    documento: { required: true, mensaje: 'Por favor ingrese un número de documento válido.' }
+    documento: {
+        required: true,
+        min: 8,
+        max: 10,
+        mensaje: 'El número de documento es obligatorio.',
+        mensajeMin: 'El documento debe tener mínimo 8 dígitos.',
+        mensajeMax: 'El documento debe tener máximo 10 dígitos.'
+    }
 };
 
 const reglasTarea = {

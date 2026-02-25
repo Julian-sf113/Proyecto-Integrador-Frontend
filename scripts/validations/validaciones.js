@@ -10,7 +10,7 @@ export const validar = (form, reglas) => {
         const campo = form.elements[name];
         const regla = reglas[name];
 
-        if (campo.type === 'text' || campo.type === 'textarea') {
+        if (campo.type === 'text' || campo.type === 'textarea' || campo.type === 'number') {
             const { esValido, mensaje } = validarCampoTexto(campo, regla);
             if (!esValido) {
                 valido = false;
@@ -43,14 +43,14 @@ const validarCampoTexto = (elemento, regla) => {
     if (regla.required && regla.min && regla.min > elemento.value.trim().length) {
         return {
             esValido: false,
-            mensaje: `El campo debe tener como mínimo ${regla.min} caracteres.`
+            mensaje: regla.mensajeMin || `El campo debe tener como mínimo ${regla.min} caracteres.`
         };
     }
 
     if (regla.required && regla.max && regla.max < elemento.value.trim().length) {
         return {
             esValido: false,
-            mensaje: `El campo debe tener como máximo ${regla.max} caracteres.`
+            mensaje: regla.mensajeMax || `El campo debe tener como máximo ${regla.max} caracteres.`
         };
     }
 
