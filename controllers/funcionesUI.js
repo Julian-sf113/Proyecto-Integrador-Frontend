@@ -6,8 +6,11 @@
 // manejar modales, etc.
 
 // Importación de variables del DOM y funciones de UI
-import { totalTareas, contadorTareas, seccionFormularioTarea, seccionListaTareas, inputTituloTarea, inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, modalOverlay, modalContent } from './variables.js';
+import { estado, contadorTareas, seccionFormularioTarea, seccionListaTareas, inputTituloTarea, inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, modalOverlay, modalContent } from './variables.js';
 import { crearContenidoModal } from '../ui/index.js';
+
+let manejadorCerrarModal = null;
+let manejadorTeclaModal = null;
 
 // =============================================================================
 // FUNCIONES DE CONTADOR Y VISUALIZACIÓN
@@ -18,10 +21,10 @@ import { crearContenidoModal } from '../ui/index.js';
  * Muestra "1 tarea" o "X tareas" según corresponda
  */
 export function actualizarContador() {
-    let textoContador = `${totalTareas} tarea`;
+    let textoContador = `${estado.totalTareas} tarea`;
 
     // Agrega 's' si hay más de una tarea
-    if (totalTareas !== 1) {
+    if (estado.totalTareas !== 1) {
         textoContador = `${textoContador}s`;
     }
 
@@ -68,17 +71,16 @@ export function mostrarSeccionesInferiores() {
  */
 export function cerrarModalFeedback() {
     modalOverlay.classList.remove('modal-overlay--visible');
-    document.removeEventListener('keydown', manejarTeclaModal);
-}
-
-/**
- * Maneja el evento de tecla en el modal
- * Cierra el modal al presionar Enter
- */
-function manejarTeclaModal(evento) {
-    if (evento.key === 'Enter') {
-        evento.preventDefault();
-        cerrarModalFeedback();
+    
+    if (manejadorTeclaModal) {
+        document.removeEventListener('keydown', manejadorTeclaModal);
+        manejadorTeclaModal = null;
+    }
+    
+    const botonCerrar = document.getElementById('modalCloseBtn');
+    if (botonCerrar && manejadorCerrarModal) {
+        botonCerrar.removeEventListener('click', manejadorCerrarModal);
+        manejadorCerrarModal = null;
     }
 }
 
@@ -90,6 +92,9 @@ function manejarTeclaModal(evento) {
  * @param {string} pista - Texto adicional opcional
  */
 export function mostrarModalFeedback(tipo, titulo, texto, pista = '') {
+    // Cierra cualquier modal abierto primero para evitar acumulación
+    cerrarModalFeedback();
+    
     // Configura la clase CSS según el tipo
     modalContent.className = `modal-content modal-content--${tipo}`;
     modalContent.textContent = '';
@@ -101,9 +106,18 @@ export function mostrarModalFeedback(tipo, titulo, texto, pista = '') {
     // Muestra el modal
     modalOverlay.classList.add('modal-overlay--visible');
 
+    // Crea los handlers para esta instancia del modal
+    manejadorCerrarModal = () => cerrarModalFeedback();
+    manejadorTeclaModal = (evento) => {
+        if (evento.key === 'Enter') {
+            evento.preventDefault();
+            cerrarModalFeedback();
+        }
+    };
+
     // Configura los event listeners
     const botonCerrar = document.getElementById('modalCloseBtn');
-    botonCerrar.addEventListener('click', cerrarModalFeedback);
-    document.addEventListener('keydown', manejarTeclaModal);
+    botonCerrar.addEventListener('click', manejadorCerrarModal);
+    document.addEventListener('keydown', manejadorTeclaModal);
     botonCerrar.focus();
 }

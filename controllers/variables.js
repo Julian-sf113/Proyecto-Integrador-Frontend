@@ -33,9 +33,11 @@ export const selectores = {
 // VARIABLES DE ESTADO GLOBAL
 // =============================================================================
 // Variables que mantienen el estado actual de la aplicación
-export let usuarioActual = null;    // Usuario autenticado actualmente
-export let totalTareas = 0;         // Contador total de tareas
-export let editandoId = null;       // ID de la tarea en edición (null si no hay)
+export const estado = {
+    usuarioActual: null,
+    totalTareas: 0,
+    editandoId: null
+};
 
 // =============================================================================
 // REFERENCIAS A ELEMENTOS DEL DOM
