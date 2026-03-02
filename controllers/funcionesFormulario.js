@@ -5,7 +5,7 @@
 // de formularios: limpieza, validación, carga de datos, etc.
 
 // Importación de variables del DOM necesarias para los formularios
-import { formularioTarea, errorTituloTarea, errorEstadoTarea, errorDescripcionTarea, inputTituloTarea, inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, contenedorTareas, editandoId } from './variables.js';
+import { formularioTarea, errorTituloTarea, errorEstadoTarea, errorDescripcionTarea, inputTituloTarea, inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, contenedorTareas, estado } from './variables.js';
 
 // =============================================================================
 // FUNCIONES DE LIMPIEZA Y VALIDACIÓN DE FORMULARIOS
@@ -33,15 +33,15 @@ export function limpiarFormularioDeTarea() {
     inputDescripcionTarea.classList.remove('error');
     
     // Si estaba editando, habilita el botón eliminar de la tarea original
-    if (editandoId) {
-        const btnDesbloquear = contenedorTareas.querySelector(`.btn-eliminar[data-id="${editandoId}"]`);
+    if (estado.editandoId) {
+        const btnDesbloquear = contenedorTareas.querySelector(`.btn-eliminar[data-id="${estado.editandoId}"]`);
         if (btnDesbloquear) {
             btnDesbloquear.disabled = false;
         }
     }
     
     // Restablece el estado de edición
-    editandoId = null;
+    estado.editandoId = null;
     
     // Restablece el texto del botón a "Agregar Tarea"
     botonGuardarTarea.querySelector('.task-form__btn-text').textContent = 'Agregar Tarea';
@@ -83,7 +83,9 @@ export function cargarTareaEnFormulario(card) {
 
     // Deshabilita el botón eliminar de la tarea que se está editando
     const btnEliminarCard = card.querySelector('.btn-eliminar');
-    btnEliminarCard.disabled = true;
+    if (btnEliminarCard) {
+        btnEliminarCard.disabled = true;
+    }
 
     // Cambia el texto del botón a "Editar Tarea"
     botonGuardarTarea.querySelector('.task-form__btn-text').textContent = 'Editar Tarea';

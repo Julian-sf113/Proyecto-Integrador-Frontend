@@ -8,16 +8,16 @@
 import { 
     formularioBusqueda, inputDocumento, errorDocumento, formularioTarea, inputTituloTarea, 
     inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, errorTituloTarea, 
-    errorEstadoTarea, errorDescripcionTarea, contenedorTareas, estadoVacio, 
+    errorEstadoTarea, errorDescripcionTarea, contenedorTareas, 
     contadorTareas, seccionFormularioTarea, seccionListaTareas, modalOverlay, 
-    modalContent, usuarioActual, totalTareas, editandoId 
+    modalContent, estado 
 } from './variables.js';
 
 // Importación de configuración y reglas de validación
 import { urlAPI, reglasBusqueda, reglasTarea } from '../config/index.js';
 
 // Importación de funciones de interfaz de usuario
-import { actualizarContador, ocultarSeccionesInferiores, mostrarSeccionesInferiores, cerrarModalFeedback, manejarTeclaModal, mostrarModalFeedback } from './funcionesUI.js';
+import { actualizarContador, ocultarSeccionesInferiores, mostrarSeccionesInferiores, cerrarModalFeedback, mostrarModalFeedback } from './funcionesUI.js';
 
 // Importación de funciones de manejo de formularios
 import { limpiarFormularioDeTarea, cargarTareaEnFormulario } from './funcionesFormulario.js';
@@ -26,7 +26,7 @@ import { limpiarFormularioDeTarea, cargarTareaEnFormulario } from './funcionesFo
 import { eliminarTarea, pintarTareaEnDOM } from './funcionesTareas.js';
 
 // Importación de funciones de API
-import { getOneUser, createTask, deleteTask, patchTask } from '../api/index.js';
+import { getOneUser, getTasks, createTask, deleteTask, patchTask } from '../api/index.js';
 
 // Importación de servicios de utilidad
 import { obtenerClaseEstado, obtenerEtiquetaEstado, obtenerTextoFechaHoraActual, obtenerInicialesUsuario } from '../services/index.js';
@@ -35,7 +35,7 @@ import { obtenerClaseEstado, obtenerEtiquetaEstado, obtenerTextoFechaHoraActual,
 import { validar } from '../utils/index.js';
 
 // Importación de componentes de UI
-import { crearContenidoModal, crearTarjetaTarea } from '../ui/index.js';
+import { crearTarjetaTarea, crearEmptyState } from '../ui/index.js';
 
 // =============================================================================
 // FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
@@ -72,7 +72,8 @@ export function iniciarAplicacion() {
         if (!valido) {
             // Maneja errores de validación
             inputDocumento.classList.add('error');
-            usuarioActual = null;
+            errorDocumento.textContent = errores.documento || 'Dato inválido.';
+            estado.usuarioActual = null;
             ocultarSeccionesInferiores();
             limpiarFormularioDeTarea();
 
@@ -92,9 +93,28 @@ export function iniciarAplicacion() {
             const usuario = await getOneUser(documento);
 
             // Usuario encontrado: actualiza el estado
-            usuarioActual = usuario;
+            estado.usuarioActual = usuario;
+            estado.totalTareas = 0;
+            contenedorTareas.innerHTML = '';
+            const emptyState = crearEmptyState();
+            contenedorTareas.appendChild(emptyState);
             mostrarSeccionesInferiores();
+            actualizarContador();
             inputTituloTarea.focus();
+
+            // Cargar tareas existentes del usuario
+            try {
+                const tareas = await getTasks(usuario.id);
+                console.log('Tareas del usuario:', tareas);
+                if (tareas && tareas.length > 0) {
+                    emptyState.classList.add('hidden');
+                    for (const tarea of tareas) {
+                        pintarTareaEnDOM(tarea);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar las tareas:', error);
+            }
 
             mostrarModalFeedback(
                 'success',
@@ -106,7 +126,7 @@ export function iniciarAplicacion() {
             );
         } catch {
             // Usuario no encontrado
-            usuarioActual = null;
+            estado.usuarioActual = null;
             inputDocumento.classList.add('error');
             ocultarSeccionesInferiores();
             limpiarFormularioDeTarea();
@@ -155,19 +175,19 @@ export function iniciarAplicacion() {
             return;
         }
 
-        if (editandoId) {
+        if (estado.editandoId) {
             // MODO EDICIÓN: Actualiza tarea existente
             try {
-                await patchTask(editandoId, {
+                await patchTask(estado.editandoId, {
                     title: inputTituloTarea.value.trim(),
                     body: inputDescripcionTarea.value.trim(),
                     status: inputEstadoTarea.value
                 });
 
                 // Actualiza la tarjeta en el DOM
-                const cardEditada = contenedorTareas.querySelector(`[data-id="${editandoId}"]`);
-                if (cardEditada) {
-                    const card = cardEditada.closest('.message-card');
+                const btnEditar = contenedorTareas.querySelector(`.btn-editar[data-id="${estado.editandoId}"]`);
+                if (btnEditar) {
+                    const card = btnEditar.closest('.message-card');
                     card.querySelector('strong').textContent = inputTituloTarea.value.trim();
 
                     // Actualiza la descripción
@@ -187,25 +207,24 @@ export function iniciarAplicacion() {
 
                 limpiarFormularioDeTarea();
                 // NOTA: Comentarios del código original
-                // mostrarModalFeedback(
-                //     'success',
-                //     'Tarea Actualizada',
-                //     'La tarea ha sido actualizada correctamente.'
-                // );
+                mostrarModalFeedback(
+                    'success',
+                    'Tarea Actualizada',
+                    'La tarea ha sido actualizada correctamente.'
+                );
             } catch (error) {
                 console.error('Error al actualizar la tarea:', error);
-                // NOTA: Comentarios del código original
-                // mostrarModalFeedback(
-                //     'error',
-                //     'Error al Actualizar',
-                //     'No se pudo actualizar la tarea. Verifique la conexión con el servidor.'
-                // );
+                mostrarModalFeedback(
+                    'error',
+                    'Error al Actualizar',
+                    'No se pudo actualizar la tarea. Verifique la conexión con el servidor.'
+                );
             }
         } else {
             // MODO CREACIÓN: Crea nueva tarea
             try {
                 const nuevaTarea = await createTask({
-                    userId: usuarioActual.id,
+                    userId: estado.usuarioActual.id,
                     title: inputTituloTarea.value.trim(),
                     body: inputDescripcionTarea.value.trim(),
                     status: inputEstadoTarea.value
@@ -217,12 +236,11 @@ export function iniciarAplicacion() {
                 inputTituloTarea.focus();
             } catch (error) {
                 console.error('Error al crear la tarea:', error);
-                // NOTA: Comentarios del código original
-                // mostrarModalFeedback(
-                //     'error',
-                //     'Error al Guardar',
-                //     'Error al guardar la tarea. Verifique la conexión con el servidor.'
-                // );
+                mostrarModalFeedback(
+                    'error',
+                    'Error al Guardar',
+                    'Error al guardar la tarea. Verifique la conexión con el servidor.'
+                );
             }
         }
     });
@@ -237,7 +255,7 @@ export function iniciarAplicacion() {
             // Maneja clic en botón editar
             const id = btnEditar.getAttribute('data-id');
             const card = btnEditar.closest('.message-card');
-            editandoId = id;
+            estado.editandoId = id;
             cargarTareaEnFormulario(card);
             return;
         }

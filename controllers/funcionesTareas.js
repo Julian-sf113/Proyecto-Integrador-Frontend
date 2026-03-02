@@ -6,7 +6,7 @@
 
 // Importación de dependencias necesarias para el manejo de tareas
 import { deleteTask } from '../api/index.js';
-import { totalTareas, estadoVacio, contenedorTareas, usuarioActual } from './variables.js';
+import { estadoVacio, contenedorTareas, estado } from './variables.js';
 import { actualizarContador } from './funcionesUI.js';
 import { obtenerInicialesUsuario, obtenerClaseEstado, obtenerEtiquetaEstado, obtenerTextoFechaHoraActual } from '../services/index.js';
 import { crearTarjetaTarea } from '../ui/index.js';
@@ -32,11 +32,11 @@ export async function eliminarTarea(taskId, card) {
         card.remove();
         
         // Actualiza el contador de tareas
-        totalTareas -= 1;
+        estado.totalTareas -= 1;
         actualizarContador();
 
         // Muestra el estado vacío si no hay más tareas
-        if (totalTareas === 0) {
+        if (estado.totalTareas === 0) {
             estadoVacio.classList.remove('hidden');
         }
 
@@ -68,7 +68,7 @@ export async function eliminarTarea(taskId, card) {
  */
 export function pintarTareaEnDOM(tareaCreada) {
     // Construye el nombre completo del usuario
-    const nombreCompleto = `${usuarioActual.firstName} ${usuarioActual.lastName}`;
+    const nombreCompleto = `${estado.usuarioActual.firstName} ${estado.usuarioActual.lastName}`;
     
     // Obtiene las iniciales del usuario
     const iniciales = obtenerInicialesUsuario(nombreCompleto);
@@ -85,13 +85,22 @@ export function pintarTareaEnDOM(tareaCreada) {
     // Crea la tarjeta de tarea con todos los datos
     const tarjetaTarea = crearTarjetaTarea(nombreCompleto, iniciales, tareaCreada, estadoClase, estadoTexto, fechaHora);
 
-    // Inserta la tarjeta al principio del contenedor
-    contenedorTareas.insertBefore(tarjetaTarea, contenedorTareas.firstChild);
+    // Busca el estado vacío en el DOM
+    const emptyState = contenedorTareas.querySelector('#emptyState');
+    
+    // Inserta la tarjeta antes del estado vacío
+    if (emptyState) {
+        contenedorTareas.insertBefore(tarjetaTarea, emptyState);
+    } else {
+        contenedorTareas.appendChild(tarjetaTarea);
+    }
     
     // Actualiza el contador de tareas
-    totalTareas += 1;
+    estado.totalTareas += 1;
     actualizarContador();
     
     // Oculta el estado vacío
-    estadoVacio.classList.add('hidden');
+    if (emptyState) {
+        emptyState.classList.add('hidden');
+    }
 }

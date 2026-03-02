@@ -4,9 +4,6 @@
 // Este archivo es el punto de entrada de la aplicación.
 // Toda la lógica ha sido modularizada en carpetas específicas.
 
-// Importación de la configuración global de la aplicación
-import { urlAPI } from './config/index.js';
-
 // Importación de la función principal que inicializa toda la aplicación
 import { iniciarAplicacion } from './controllers/index.js';
 
