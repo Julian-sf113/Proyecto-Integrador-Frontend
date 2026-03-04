@@ -5,12 +5,12 @@
 // Configura todos los event listeners y maneja la lógica principal de la UI.
 
 // Importación de todas las variables y selectores del DOM
-import { 
-    formularioBusqueda, inputDocumento, errorDocumento, formularioTarea, inputTituloTarea, 
-    inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, errorTituloTarea, 
-    errorEstadoTarea, errorDescripcionTarea, contenedorTareas, 
-    contadorTareas, seccionFormularioTarea, seccionListaTareas, modalOverlay, 
-    modalContent, estado 
+import {
+    formularioBusqueda, inputDocumento, errorDocumento, formularioTarea, inputTituloTarea,
+    inputEstadoTarea, inputDescripcionTarea, botonGuardarTarea, errorTituloTarea,
+    errorEstadoTarea, errorDescripcionTarea, contenedorTareas,
+    contadorTareas, seccionFormularioTarea, seccionListaTareas, modalOverlay,
+    modalContent, estado
 } from './variables.js';
 
 // Importación de configuración y reglas de validación
@@ -23,7 +23,7 @@ import { actualizarContador, ocultarSeccionesInferiores, mostrarSeccionesInferio
 import { limpiarFormularioDeTarea, cargarTareaEnFormulario } from './funcionesFormulario.js';
 
 // Importación de funciones de manejo de tareas
-import { eliminarTarea, pintarTareaEnDOM } from './funcionesTareas.js';
+import { eliminarTarea, pintarTareaEnDOM, agregarTareaAlEstado } from './funcionesTareas.js';
 
 // Importación de funciones de API
 import { getOneUser, getTasks, createTask, deleteTask, patchTask } from '../api/index.js';
@@ -37,14 +37,23 @@ import { validar } from '../utils/index.js';
 // Importación de componentes de UI
 import { crearTarjetaTarea, crearEmptyState } from '../ui/index.js';
 
+// RF01/RF02: Importación del módulo de filtros y ordenamiento
+import { aplicarFiltrosYOrden, resetearFiltros } from './funcionesFiltros.js';
+
+// RF03: Importación del módulo de notificaciones desde utils (independiente del módulo API)
+import { notificarExito, notificarError, notificarInfo } from '../utils/index.js';
+
+// RF04: Importación del servicio de exportación (solo procesamiento de datos)
+import { exportarTareasJSON } from '../services/exportar.js';
+
 // =============================================================================
 // FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
 // =============================================================================
 
 /**
- * Inicializa toda la aplicación
+ * Inicializa toda la aplicación.
  * Configura los formularios, establece los event listeners
- * y prepara la interfaz para su uso
+ * y prepara la interfaz para su uso.
  */
 export function iniciarAplicacion() {
     // Inicializa el estado de la UI
@@ -70,7 +79,6 @@ export function iniciarAplicacion() {
         const { valido, errores } = validar(formularioBusqueda, reglasBusqueda);
 
         if (!valido) {
-            // Maneja errores de validación
             inputDocumento.classList.add('error');
             errorDocumento.textContent = errores.documento || 'Dato inválido.';
             estado.usuarioActual = null;
@@ -89,12 +97,16 @@ export function iniciarAplicacion() {
         const documento = inputDocumento.value.trim();
 
         try {
-            // Busca el usuario en la API
             const usuario = await getOneUser(documento);
 
-            // Usuario encontrado: actualiza el estado
+            // Usuario encontrado: resetear estado completo
             estado.usuarioActual = usuario;
             estado.totalTareas = 0;
+            estado.tareas = [];
+
+            // RF01/RF02: Reiniciar filtros y controles visuales
+            resetearFiltros();
+
             contenedorTareas.innerHTML = '';
             const emptyState = crearEmptyState();
             contenedorTareas.appendChild(emptyState);
@@ -102,15 +114,18 @@ export function iniciarAplicacion() {
             actualizarContador();
             inputTituloTarea.focus();
 
-            // Cargar tareas existentes del usuario
+            // Cargar tareas existentes del usuario (carga por lotes)
             try {
                 const tareas = await getTasks(usuario.id);
-                console.log('Tareas del usuario:', tareas);
+
                 if (tareas && tareas.length > 0) {
-                    emptyState.classList.add('hidden');
+                    // Cargar todas las tareas en estado sin re-renderizar en cada iteración
                     for (const tarea of tareas) {
-                        pintarTareaEnDOM(tarea);
+                        agregarTareaAlEstado(tarea);
                     }
+                    actualizarContador();
+                    // Renderizar una sola vez con filtros y orden por defecto
+                    aplicarFiltrosYOrden();
                 }
             } catch (error) {
                 console.error('Error al cargar las tareas:', error);
@@ -125,7 +140,6 @@ export function iniciarAplicacion() {
                 ]
             );
         } catch {
-            // Usuario no encontrado
             estado.usuarioActual = null;
             inputDocumento.classList.add('error');
             ocultarSeccionesInferiores();
@@ -159,7 +173,6 @@ export function iniciarAplicacion() {
         const { valido, errores } = validar(formularioTarea, reglasTarea);
 
         if (!valido) {
-            // Maneja errores de validación específicos
             if (errores.titulo) {
                 inputTituloTarea.classList.add('error');
                 errorTituloTarea.textContent = errores.titulo;
@@ -184,41 +197,31 @@ export function iniciarAplicacion() {
                     status: inputEstadoTarea.value
                 });
 
-                // Actualiza la tarjeta en el DOM
-                const btnEditar = contenedorTareas.querySelector(`.btn-editar[data-id="${estado.editandoId}"]`);
-                if (btnEditar) {
-                    const card = btnEditar.closest('.message-card');
-                    card.querySelector('strong').textContent = inputTituloTarea.value.trim();
-
-                    // Actualiza la descripción
-                    const contenido = card.querySelector('.message-card__content');
-                    for (const nodo of contenido.childNodes) {
-                        if (nodo.nodeType === Node.TEXT_NODE && nodo.textContent.trim() !== '') {
-                            nodo.textContent = inputDescripcionTarea.value.trim();
-                            break;
-                        }
-                    }
-
-                    // Actualiza el estado
-                    const divEstado = card.querySelector('.message-card__status');
-                    divEstado.className = `message-card__status ${obtenerClaseEstado(inputEstadoTarea.value)}`;
-                    divEstado.querySelector('b').textContent = obtenerEtiquetaEstado(inputEstadoTarea.value);
+                // Actualizar la tarea en estado.tareas (fuente de verdad)
+                const idx = estado.tareas.findIndex(
+                    (t) => String(t.id) === String(estado.editandoId)
+                );
+                if (idx !== -1) {
+                    estado.tareas[idx] = {
+                        ...estado.tareas[idx],
+                        title: inputTituloTarea.value.trim(),
+                        body: inputDescripcionTarea.value.trim(),
+                        status: inputEstadoTarea.value
+                    };
                 }
 
+                // Limpiar formulario primero (libera el btn-eliminar del card anterior)
                 limpiarFormularioDeTarea();
-                // NOTA: Comentarios del código original
-                mostrarModalFeedback(
-                    'success',
-                    'Tarea Actualizada',
-                    'La tarea ha sido actualizada correctamente.'
-                );
+
+                // Re-renderizar respetando filtros y orden activos (RF01/RF02)
+                aplicarFiltrosYOrden();
+
+                // RF03: Notificación de éxito
+                notificarExito('La tarea ha sido actualizada correctamente.');
             } catch (error) {
                 console.error('Error al actualizar la tarea:', error);
-                mostrarModalFeedback(
-                    'error',
-                    'Error al Actualizar',
-                    'No se pudo actualizar la tarea. Verifique la conexión con el servidor.'
-                );
+                // RF03: Notificación de error
+                notificarError('No se pudo actualizar la tarea. Verifique la conexión con el servidor.');
             }
         } else {
             // MODO CREACIÓN: Crea nueva tarea
@@ -230,17 +233,17 @@ export function iniciarAplicacion() {
                     status: inputEstadoTarea.value
                 });
 
-                // Renderiza la nueva tarea en el DOM
+                // pintarTareaEnDOM agrega a estado.tareas y re-renderiza con filtros activos
                 pintarTareaEnDOM(nuevaTarea);
                 limpiarFormularioDeTarea();
                 inputTituloTarea.focus();
+
+                // RF03: Notificación de éxito
+                notificarExito('¡Tarea agregada correctamente!');
             } catch (error) {
                 console.error('Error al crear la tarea:', error);
-                mostrarModalFeedback(
-                    'error',
-                    'Error al Guardar',
-                    'Error al guardar la tarea. Verifique la conexión con el servidor.'
-                );
+                // RF03: Notificación de error
+                notificarError('Error al guardar la tarea. Verifique la conexión con el servidor.');
             }
         }
     });
@@ -252,7 +255,6 @@ export function iniciarAplicacion() {
         const btnEditar = evento.target.closest('.btn-editar');
 
         if (btnEditar) {
-            // Maneja clic en botón editar
             const id = btnEditar.getAttribute('data-id');
             const card = btnEditar.closest('.message-card');
             estado.editandoId = id;
@@ -263,13 +265,15 @@ export function iniciarAplicacion() {
         const btnEliminar = evento.target.closest('.btn-eliminar');
 
         if (btnEliminar) {
-            // Maneja clic en botón eliminar
             const confirmado = confirm('¿Está seguro de que desea eliminar esta tarea?');
             if (!confirmado) return;
 
             const id = btnEliminar.getAttribute('data-id');
             const card = btnEliminar.closest('.message-card');
             await eliminarTarea(id, card);
+
+            // RF03: Notificación tras eliminar
+            notificarInfo('Tarea eliminada.');
         }
     });
 
@@ -277,26 +281,122 @@ export function iniciarAplicacion() {
     // EVENT LISTENERS: LIMPIEZA DE ERRORES
     // =============================================================================
 
-    // Limpia error de documento al escribir
     inputDocumento.addEventListener('input', () => {
         errorDocumento.textContent = '';
     });
 
-    // Limpia error de título al escribir
     inputTituloTarea.addEventListener('input', () => {
         errorTituloTarea.textContent = '';
         inputTituloTarea.classList.remove('error');
     });
 
-    // Limpia error de estado al cambiar
     inputEstadoTarea.addEventListener('change', () => {
         errorEstadoTarea.textContent = '';
         inputEstadoTarea.classList.remove('error');
     });
 
-    // Limpia error de descripción al escribir
     inputDescripcionTarea.addEventListener('input', () => {
         errorDescripcionTarea.textContent = '';
         inputDescripcionTarea.classList.remove('error');
     });
+
+    // =============================================================================
+    // RF01: EVENT LISTENERS – FILTROS POR ESTADO
+    // =============================================================================
+    const filtroEstadoBotones = document.getElementById('filtroEstadoBotones');
+    if (filtroEstadoBotones) {
+        filtroEstadoBotones.addEventListener('click', (evento) => {
+            const btn = evento.target.closest('.btn-filtro');
+            if (!btn) return;
+
+            // Actualizar estado visual de botones
+            filtroEstadoBotones.querySelectorAll('.btn-filtro').forEach((b) =>
+                b.classList.remove('btn-filtro--activo')
+            );
+            btn.classList.add('btn-filtro--activo');
+
+            // Actualizar estado y re-renderizar
+            estado.filtros.estado = btn.dataset.estado;
+            aplicarFiltrosYOrden();
+        });
+    }
+
+    // =============================================================================
+    // RF01: EVENT LISTENER – FILTRO POR USUARIO / TÍTULO
+    // =============================================================================
+    const filtroUsuario = document.getElementById('filtroUsuario');
+    if (filtroUsuario) {
+        filtroUsuario.addEventListener('input', (evento) => {
+            estado.filtros.texto = evento.target.value.trim();
+            aplicarFiltrosYOrden();
+        });
+    }
+
+    // =============================================================================
+    // RF02: EVENT LISTENER – CAMBIO DE CAMPO DE ORDEN
+    // =============================================================================
+    const ordenCampo = document.getElementById('ordenCampo');
+    if (ordenCampo) {
+        ordenCampo.addEventListener('change', (evento) => {
+            estado.ordenamiento.campo = evento.target.value;
+            aplicarFiltrosYOrden();
+        });
+    }
+
+    // =============================================================================
+    // RF02: EVENT LISTENER – CAMBIO DE DIRECCIÓN DE ORDEN
+    // =============================================================================
+    const ordenDireccion = document.getElementById('ordenDireccion');
+    if (ordenDireccion) {
+        ordenDireccion.addEventListener('click', () => {
+            const nueva = estado.ordenamiento.direccion === 'asc' ? 'desc' : 'asc';
+            estado.ordenamiento.direccion = nueva;
+            ordenDireccion.dataset.direccion = nueva;
+
+            // Actualizar icono según dirección
+            const icono = ordenDireccion.querySelector('i');
+            if (icono) {
+                icono.className = nueva === 'asc'
+                    ? 'fa-solid fa-sort-up'
+                    : 'fa-solid fa-sort-down';
+            }
+
+            aplicarFiltrosYOrden();
+        });
+    }
+
+    // =============================================================================
+    // RF04: EVENT LISTENER – EXPORTAR TAREAS A JSON
+    // =============================================================================
+    const exportarBtn = document.getElementById('exportarBtn');
+    if (exportarBtn) {
+        exportarBtn.addEventListener('click', () => {
+            // Exportar solo las tareas visibles (filtradas y ordenadas)
+            const tareasAExportar = estado.tareasVisibles.length > 0
+                ? estado.tareasVisibles
+                : estado.tareas;
+
+            if (tareasAExportar.length === 0) {
+                notificarInfo('No hay tareas visibles para exportar.');
+                return;
+            }
+
+            // Procesamiento de datos: responsabilidad de services/exportar.js
+            const json = exportarTareasJSON(tareasAExportar);
+
+            // Descarga: responsabilidad del controlador (UI)
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const enlace = document.createElement('a');
+            enlace.href = url;
+            enlace.download = `tareas-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(enlace);
+            enlace.click();
+            document.body.removeChild(enlace);
+            URL.revokeObjectURL(url);
+
+            // RF03: Notificación de la acción
+            notificarExito(`${tareasAExportar.length} tarea(s) exportadas correctamente.`);
+        });
+    }
 }
