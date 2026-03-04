@@ -41,7 +41,7 @@ import { crearTarjetaTarea, crearEmptyState } from '../ui/index.js';
 import { aplicarFiltrosYOrden, resetearFiltros } from './funcionesFiltros.js';
 
 // RF03: Importación del módulo de notificaciones desde utils (independiente del módulo API)
-import { notificarExito, notificarError, notificarInfo } from '../utils/index.js';
+import { notificarExito, notificarError, notificarInfo, confirmarEliminacionTarea } from '../utils/index.js';
 
 // RF04: Importación del servicio de exportación (solo procesamiento de datos)
 import { exportarTareasJSON } from '../services/exportar.js';
@@ -265,7 +265,7 @@ export function iniciarAplicacion() {
         const btnEliminar = evento.target.closest('.btn-eliminar');
 
         if (btnEliminar) {
-            const confirmado = confirm('¿Está seguro de que desea eliminar esta tarea?');
+            const confirmado = await confirmarEliminacionTarea();
             if (!confirmado) return;
 
             const id = btnEliminar.getAttribute('data-id');
