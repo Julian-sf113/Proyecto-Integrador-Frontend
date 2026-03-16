@@ -10,7 +10,7 @@ export const validar = (form, reglas) => {
         const campo = form.elements[name];
         const regla = reglas[name];
 
-        if (campo.type === 'text' || campo.type === 'textarea' || campo.type === 'number') {
+        if (campo.type === 'text' || campo.type === 'textarea' || campo.type === 'number' || campo.type === 'email') {
             const { esValido, mensaje } = validarCampoTexto(campo, regla);
             if (!esValido) {
                 valido = false;
@@ -57,6 +57,14 @@ const validarCampoTexto = (elemento, regla) => {
         return {
             esValido: false,
             mensaje: regla.mensajeMax || `El campo debe tener como máximo ${regla.max} caracteres.`
+        };
+    }
+
+    // Validación de patrones (regex)
+    if (regla.pattern && !regla.pattern.test(valor)) {
+        return {
+            esValido: false,
+            mensaje: regla.mensajePattern || 'El formato del campo no es válido.'
         };
     }
 

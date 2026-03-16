@@ -53,7 +53,7 @@ function mostrar(tipo, mensaje, duracion = DURACION_DEFAULT) {
     const btnCerrar = document.createElement('button');
     btnCerrar.className = 'notificacion__cerrar';
     btnCerrar.setAttribute('aria-label', 'Cerrar notificación');
-    btnCerrar.innerHTML = '&times;';
+    btnCerrar.textContent = '×';
     btnCerrar.addEventListener('click', () => cerrarNotificacion(notif));
 
     notif.appendChild(icono);
