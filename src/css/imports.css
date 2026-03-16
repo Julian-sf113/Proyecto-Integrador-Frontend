@@ -2,6 +2,7 @@
     IMPORTACIONES Y VARIABLES CSS
 ============================================ */
 @import './components/root.css';
+@import './components/navigation.css';
 @import './components/header.css';
 @import './components/card.css';
 @import './components/search.css';

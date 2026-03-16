@@ -26,7 +26,34 @@ export const selectores = {
     seccionFormularioTarea: '.task-form-section',
     seccionListaTareas: '.tasks-section',
     modalOverlay: '#feedbackModal',
-    modalContent: '#feedbackModalContent'
+    modalContent: '#feedbackModalContent',
+    // Nuevos selectores para vistas administrativas
+    navegacionPrincipal: '.main-nav',
+    btnVistaUsuario: '#btnVistaUsuario',
+    btnVistaAdministracion: '#btnVistaAdministracion',
+    btnVistaAdminGlobal: '#btnVistaAdminGlobal',
+    // Administración de usuarios
+    seccionAdministracion: '.admin-section',
+    formularioUsuario: '#userForm',
+    inputUsuarioNombre: '#userFirstName',
+    inputUsuarioApellido: '#userLastName',
+    inputUsuarioEmail: '#userEmail',
+    inputUsuarioDocumento: '#userDocumentId',
+    botonGuardarUsuario: '#saveUserBtn',
+    errorUsuarioNombre: '#userFirstNameError',
+    errorUsuarioApellido: '#userLastNameError',
+    errorUsuarioEmail: '#userEmailError',
+    errorUsuarioDocumento: '#userDocumentIdError',
+    contenedorUsuarios: '#usersContainer',
+    contadorUsuarios: '#usersCount',
+    // Panel administrativo global
+    seccionAdminGlobal: '.admin-global-section',
+    contenedorTareasAdmin: '#adminTasksContainer',
+    contadorTareasAdmin: '#adminTasksCount',
+    filtroAdminUsuario: '#adminUserFilter',
+    // Asignación múltiple
+    contenedorAsignacion: '#assignmentContainer',
+    checkboxUsuarios: '.user-checkbox'
 };
 
 // =============================================================================
@@ -50,7 +77,18 @@ export const estado = {
     ordenamiento: {
         campo: 'fecha',
         direccion: 'desc'
-    }
+    },
+    // Nuevas funcionalidades: Sistema de vistas
+    vistaActual: 'usuario', // 'usuario', 'administracion', 'admin-global'
+    esAdministrador: false,
+    // Para administración de usuarios
+    usuarios: [],
+    editandoUsuarioId: null,
+    // Para asignación múltiple
+    usuariosSeleccionados: [],
+    // Para panel administrativo
+    todasLasTareas: [],
+    filtroAdminUsuario: ''
 };
 
 // =============================================================================
@@ -76,3 +114,30 @@ export const seccionFormularioTarea = document.querySelector(selectores.seccionF
 export const seccionListaTareas = document.querySelector(selectores.seccionListaTareas);
 export const modalOverlay = document.querySelector(selectores.modalOverlay);
 export const modalContent = document.querySelector(selectores.modalContent);
+// Nuevas referencias para vistas administrativas
+export const navegacionPrincipal = document.querySelector(selectores.navegacionPrincipal);
+export const btnVistaUsuario = document.querySelector(selectores.btnVistaUsuario);
+export const btnVistaAdministracion = document.querySelector(selectores.btnVistaAdministracion);
+export const btnVistaAdminGlobal = document.querySelector(selectores.btnVistaAdminGlobal);
+export const seccionAdministracion = document.querySelector(selectores.seccionAdministracion);
+export const formularioUsuario = document.querySelector(selectores.formularioUsuario);
+export const inputUsuarioNombre = document.querySelector(selectores.inputUsuarioNombre);
+export const inputUsuarioApellido = document.querySelector(selectores.inputUsuarioApellido);
+export const inputUsuarioEmail = document.querySelector(selectores.inputUsuarioEmail);
+export const inputUsuarioDocumento = document.querySelector(selectores.inputUsuarioDocumento);
+export const botonGuardarUsuario = document.querySelector(selectores.botonGuardarUsuario);
+export const errorUsuarioNombre = document.querySelector(selectores.errorUsuarioNombre);
+export const errorUsuarioApellido = document.querySelector(selectores.errorUsuarioApellido);
+export const errorUsuarioEmail = document.querySelector(selectores.errorUsuarioEmail);
+export const errorUsuarioDocumento = document.querySelector(selectores.errorUsuarioDocumento);
+export const contenedorUsuarios = document.querySelector(selectores.contenedorUsuarios);
+export const contadorUsuarios = document.querySelector(selectores.contadorUsuarios);
+export const seccionAdminGlobal = document.querySelector(selectores.seccionAdminGlobal);
+export const contenedorTareasAdmin = document.querySelector(selectores.contenedorTareasAdmin);
+export const contadorTareasAdmin = document.querySelector(selectores.contadorTareasAdmin);
+export const filtroAdminUsuario = document.querySelector(selectores.filtroAdminUsuario);
+export const contenedorAsignacion = document.querySelector(selectores.contenedorAsignacion);
+
+// Exportaciones adicionales para referencias directas
+export const assignmentGroup = document.querySelector('#assignmentGroup');
+export const editandoUsuarioId = estado.editandoUsuarioId;
