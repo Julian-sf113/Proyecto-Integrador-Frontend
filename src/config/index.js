@@ -8,7 +8,7 @@
 // CONFIGURACIÓN DE API
 // =============================================================================
 // URL base para todas las llamadas a la API del backend
-export const urlAPI = 'http://localhost:3000';
+export const urlAPI = 'http://localhost:3000/api';
 
 // =============================================================================
 // REGLAS DE VALIDACIÓN - BÚSQUEDA DE USUARIO
@@ -41,5 +41,42 @@ export const reglasTarea = {
     descripcion: { 
         required: true, 
         mensaje: 'La descripción de la tarea es obligatoria.' 
+    }
+};
+
+// =============================================================================
+// REGLAS DE VALIDACIÓN - FORMULARIO DE USUARIOS
+// =============================================================================
+// Define las reglas de validación para los campos del formulario de usuarios
+export const reglasUsuario = {
+    firstName: { 
+        required: true, 
+        min: 2,
+        max: 50,
+        mensaje: 'El nombre es obligatorio.',
+        mensajeMin: 'El nombre debe tener mínimo 2 caracteres.',
+        mensajeMax: 'El nombre debe tener máximo 50 caracteres.'
+    },
+    lastName: { 
+        required: true, 
+        min: 2,
+        max: 50,
+        mensaje: 'El apellido es obligatorio.',
+        mensajeMin: 'El apellido debe tener mínimo 2 caracteres.',
+        mensajeMax: 'El apellido debe tener máximo 50 caracteres.'
+    },
+    email: { 
+        required: true, 
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        mensaje: 'El email es obligatorio.',
+        mensajePattern: 'El formato del email no es válido.'
+    },
+    documentId: { 
+        required: true, 
+        min: 8,
+        max: 10,
+        mensaje: 'El documento es obligatorio.',
+        mensajeMin: 'El documento debe tener mínimo 8 dígitos.',
+        mensajeMax: 'El documento debe tener máximo 10 dígitos.'
     }
 };
