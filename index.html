@@ -10,6 +10,35 @@
 
 <body>
     <div class="container">
+        <!-- Navegación principal -->
+        <nav class="main-nav" id="mainNav" style="display: none;">
+            <div class="nav__brand">
+                <h1 class="nav__title">Gestor de Tareas</h1>
+            </div>
+            <div class="nav__menu">
+                <button class="nav__btn nav__btn--active" id="btnVistaUsuario" data-vista="usuario">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Mis Tareas</span>
+                </button>
+                <button class="nav__btn" id="btnVistaAdministracion" data-vista="administracion">
+                    <i class="fa-solid fa-users-cog"></i>
+                    <span>Administrar Usuarios</span>
+                </button>
+                <button class="nav__btn" id="btnVistaAdminGlobal" data-vista="admin-global">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>Panel Global</span>
+                </button>
+            </div>
+            <div class="nav__user">
+                <span class="nav__user-info" id="navUserInfo">Usuario: </span>
+                <button class="nav__logout" id="btnLogout">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Vista de usuario (vista original) -->
+        <div id="vistaUsuario" class="vista">
         <!-- Encabezado principal -->
         <header class="header">
             <h1 class="header__title">Registro de Tareas</h1>
@@ -78,6 +107,16 @@
                             <span id="charCount">0</span> / 200 caracteres
                         </div>
                         <span class="task-form__error" id="taskDescriptionError"></span>
+                    </div>
+
+                    <!-- Asignación múltiple de usuarios -->
+                    <div class="task-form__group" id="assignmentGroup" style="display: none;">
+                        <label class="task-form__label">
+                            Asignar a Usuarios
+                        </label>
+                        <div id="assignmentContainer" class="assignment-container">
+                            <!-- Los checkboxes de usuarios se cargarán dinámicamente -->
+                        </div>
                     </div>
 
                     <button type="submit" class="task-form__btn task-form__btn--primary" id="submitBtn">
@@ -157,6 +196,119 @@
         <footer class="footer">
             <p class="footer__text">Ejercicio de manipulación del DOM | SENA - Desarrollo Web</p>
         </footer>
+        </div> <!-- Cierre de vistaUsuario -->
+
+        <!-- Vista de administración de usuarios -->
+        <div id="vistaAdministracion" class="vista" style="display: none;">
+            <header class="header">
+                <h1 class="header__title">Administración de Usuarios</h1>
+                <p class="header__subtitle">Gestiona los usuarios del sistema</p>
+            </header>
+
+            <!-- Formulario de usuario -->
+            <section class="admin-form-section">
+                <div class="task-card">
+                    <h2 class="task-card__title" id="userFormTitle">Nuevo Usuario</h2>
+
+                    <form id="userForm" class="task-form" method="POST" novalidate>
+                        <div class="task-form__group">
+                            <label for="userFirstName" class="task-form__label">Nombres</label>
+                            <input type="text" id="userFirstName" name="firstName" class="task-form__input"
+                                placeholder="Ingresa los nombres" aria-required="true">
+                            <span class="task-form__error" id="userFirstNameError"></span>
+                        </div>
+
+                        <div class="task-form__group">
+                            <label for="userLastName" class="task-form__label">Apellidos</label>
+                            <input type="text" id="userLastName" name="lastName" class="task-form__input"
+                                placeholder="Ingresa los apellidos" aria-required="true">
+                            <span class="task-form__error" id="userLastNameError"></span>
+                        </div>
+
+                        <div class="task-form__group">
+                            <label for="userEmail" class="task-form__label">Email</label>
+                            <input type="email" id="userEmail" name="email" class="task-form__input"
+                                placeholder="Ingresa el correo electrónico" aria-required="true">
+                            <span class="task-form__error" id="userEmailError"></span>
+                        </div>
+
+                        <div class="task-form__group">
+                            <label for="userDocumentId" class="task-form__label">Número de Documento</label>
+                            <input type="number" id="userDocumentId" name="documentId" class="task-form__input"
+                                placeholder="Ingresa el número de documento" aria-required="true">
+                            <span class="task-form__error" id="userDocumentIdError"></span>
+                        </div>
+
+                        <button type="submit" class="task-form__btn task-form__btn--primary" id="saveUserBtn">
+                            <span class="task-form__btn-text" id="saveUserBtnText">Guardar Usuario</span>
+                            <span class="task-form__btn-icon">➤</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Lista de usuarios -->
+            <section class="users-section">
+                <div class="tasks-header">
+                    <h2 class="tasks-header__title">Usuarios Registrados</h2>
+                    <span class="tasks-header__count" id="usersCount">0 usuarios</span>
+                </div>
+
+                <div id="usersContainer" class="tasks-container">
+                    <div class="tasks-empty" id="usersEmptyState">
+                        <svg class="tasks-empty__icon" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <p class="tasks-empty__text">No hay usuarios registrados</p>
+                        <p class="tasks-empty__subtext">Completa el formulario para agregar tu primer usuario</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista de panel administrativo global -->
+        <div id="vistaAdminGlobal" class="vista" style="display: none;">
+            <header class="header">
+                <h1 class="header__title">Panel Administrativo Global</h1>
+                <p class="header__subtitle">Visualiza todas las tareas del sistema</p>
+            </header>
+
+            <!-- Filtros administrativos -->
+            <section class="admin-filters-section">
+                <div class="task-card">
+                    <h2 class="task-card__title">Filtros</h2>
+                    <div class="admin-filters">
+                        <div class="admin-filter__group">
+                            <label for="adminUserFilter" class="task-form__label">Filtrar por usuario</label>
+                            <select id="adminUserFilter" class="task-form__select">
+                                <option value="">Todos los usuarios</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lista de todas las tareas -->
+            <section class="admin-tasks-section">
+                <div class="tasks-header">
+                    <h2 class="tasks-header__title">Todas las Tareas</h2>
+                    <span class="tasks-header__count" id="adminTasksCount">0 tareas</span>
+                </div>
+
+                <div id="adminTasksContainer" class="tasks-container">
+                    <div class="tasks-empty" id="adminTasksEmptyState">
+                        <svg class="tasks-empty__icon" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <p class="tasks-empty__text">No hay tareas en el sistema</p>
+                        <p class="tasks-empty__subtext">Las tareas aparecerán aquí cuando se creen</p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 
     <!-- Modal de feedback -->
