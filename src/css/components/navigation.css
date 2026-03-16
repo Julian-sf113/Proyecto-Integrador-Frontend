@@ -1,0 +1,346 @@
+/* ============================================
+    NAVEGACIÓN PRINCIPAL
+============================================ */
+
+.main-nav {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.nav__brand {
+    flex: 1;
+    min-width: 200px;
+}
+
+.nav__title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.nav__menu {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex: 2;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav__btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-gray-100);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-decoration: none;
+}
+
+.nav__btn:hover {
+    background: var(--color-gray-200);
+    color: var(--color-text-primary);
+}
+
+.nav__btn--active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary-dark);
+}
+
+.nav__btn i {
+    font-size: var(--font-size-sm);
+}
+
+.nav__user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 200px;
+}
+
+.nav__user-info {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.nav__logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.nav__logout:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* ============================================
+    SISTEMA DE VISTAS
+============================================ */
+
+.vista {
+    display: block;
+}
+
+.vista[style*="display: none"] {
+    display: none !important;
+}
+
+/* ============================================
+    SECCIONES ADMINISTRATIVAS
+============================================ */
+
+.admin-form-section,
+.admin-filters-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-filters {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.admin-filter__group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.assignment-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+    max-height: 200px;
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background: var(--color-gray-50);
+}
+
+.user-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+.user-checkbox:hover {
+    background: var(--color-gray-100);
+}
+
+.user-checkbox input[type="checkbox"] {
+    accent-color: var(--color-primary);
+}
+
+.user-checkbox label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    flex: 1;
+}
+
+/* ============================================
+    TARJETAS DE USUARIO
+============================================ */
+
+.user-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-left: 4px solid var(--color-primary);
+    transition: var(--transition-base);
+}
+
+.user-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.user-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.user-card__info {
+    flex: 1;
+}
+
+.user-card__name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.user-card__email {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.user-card__document {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+}
+
+.user-card__actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.user-card__btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.user-card__btn--edit {
+    background: var(--color-info);
+    color: white;
+}
+
+.user-card__btn--edit:hover {
+    background: #2563eb;
+}
+
+.user-card__btn--delete {
+    background: var(--color-error);
+    color: white;
+}
+
+.user-card__btn--delete:hover {
+    background: #dc2626;
+}
+
+/* ============================================
+    ASIGNACIÓN MÚLTIPLE - ESTILOS ADICIONALES
+============================================ */
+
+.assigned-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.assigned-label i {
+    color: var(--color-info);
+}
+
+.asignacion-error {
+    margin-top: var(--spacing-sm);
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* ============================================
+    PANEL ADMINISTRATIVO - ESTILOS ADICIONALES
+============================================ */
+
+.admin-filters-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-filters {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.admin-filter__group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.admin-tasks-section .message-card__assigned {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-info);
+}
+
+/* ============================================
+    RESPONSIVE
+============================================ */
+
+@media (max-width: 768px) {
+    .main-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .nav__brand,
+    .nav__user {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .nav__menu {
+        justify-content: center;
+    }
+
+    .nav__btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+    }
+
+    .admin-filters {
+        flex-direction: column;
+    }
+
+    .admin-filter__group {
+        width: 100%;
+    }
+
+    .assignment-container {
+        grid-template-columns: 1fr;
+        max-height: 150px;
+    }
+}
