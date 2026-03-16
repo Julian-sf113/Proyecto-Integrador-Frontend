@@ -24,17 +24,9 @@ import { aplicarFiltrosYOrden } from './funcionesFiltros.js';
  * @param {Object} tareaCreada - Objeto de la tarea proveniente de la API
  */
 export function agregarTareaAlEstado(tareaCreada) {
-    const nombreCompleto = `${estado.usuarioActual.firstName} ${estado.usuarioActual.lastName}`;
-    const fechaHora = obtenerTextoFechaHoraActual();
-    const fechaISO = new Date().toISOString();
-
-    estado.tareas.push({
-        ...tareaCreada,
-        _usuario: nombreCompleto,
-        _fechaHora: fechaHora,
-        _fechaISO: fechaISO
-    });
-
+    // Agregar la tarea directamente al estado sin metadatos adicionales
+    // La nueva estructura ya incluye toda la información necesaria
+    estado.tareas.push(tareaCreada);
     estado.totalTareas = estado.tareas.length;
 }
 
@@ -82,17 +74,8 @@ export async function eliminarTarea(taskId, card) {
  * @param {Object} tareaCreada - Objeto de la tarea creada
  */
 export function pintarTareaEnDOM(tareaCreada) {
-    const nombreCompleto = `${estado.usuarioActual.firstName} ${estado.usuarioActual.lastName}`;
-    const fechaHora = obtenerTextoFechaHoraActual();
-    const fechaISO = new Date().toISOString();
-
-    estado.tareas.push({
-        ...tareaCreada,
-        _usuario: nombreCompleto,
-        _fechaHora: fechaHora,
-        _fechaISO: fechaISO
-    });
-
+    // Agregar la tarea al estado
+    estado.tareas.push(tareaCreada);
     estado.totalTareas = estado.tareas.length;
     actualizarContador();
 

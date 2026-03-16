@@ -29,7 +29,7 @@ function ordenarTareas(tareas) {
         let cmp = 0;
 
         if (campo === 'fecha') {
-            cmp = new Date(a._fechaISO) - new Date(b._fechaISO);
+            cmp = new Date(a.createdAt || a._fechaISO) - new Date(b.createdAt || b._fechaISO);
         } else if (campo === 'nombre') {
             cmp = a.title.localeCompare(b.title, 'es');
         } else if (campo === 'estado') {
@@ -64,18 +64,8 @@ function renderizarTareas(tareas) {
     if (emptyState) emptyState.classList.add('hidden');
 
     for (const tarea of tareas) {
-        const iniciales = obtenerInicialesUsuario(tarea._usuario);
-        const estadoClase = obtenerClaseEstado(tarea.status);
-        const estadoTexto = obtenerEtiquetaEstado(tarea.status);
-
-        const tarjeta = crearTarjetaTarea(
-            tarea._usuario,
-            iniciales,
-            tarea,
-            estadoClase,
-            estadoTexto,
-            tarea._fechaHora
-        );
+        // Usar la nueva función crearTarjetaTarea que acepta el objeto tarea directamente
+        const tarjeta = crearTarjetaTarea(tarea, false); // false para modo no-admin
 
         if (emptyState) {
             contenedorTareas.insertBefore(tarjeta, emptyState);
@@ -97,6 +87,14 @@ function renderizarTareas(tareas) {
 export function aplicarFiltrosYOrden() {
     let visibles = [...estado.tareas];
 
+    // Para la vista de usuario, filtrar solo tareas asignadas al usuario actual
+    if (estado.vistaActual === 'usuario' && estado.usuarioActual) {
+        visibles = visibles.filter((t) => 
+            t.userId === estado.usuarioActual.id || 
+            (t.assignedUserIds && t.assignedUserIds.includes(estado.usuarioActual.id))
+        );
+    }
+
     // RF01 – Filtrar por estado
     if (estado.filtros.estado) {
         visibles = visibles.filter((t) => t.status === estado.filtros.estado);
@@ -108,7 +106,8 @@ export function aplicarFiltrosYOrden() {
         visibles = visibles.filter(
             (t) =>
                 t.title.toLowerCase().includes(texto) ||
-                t._usuario.toLowerCase().includes(texto)
+                (t._usuario && t._usuario.toLowerCase().includes(texto)) ||
+                (t.assignedUserIds && t.assignedUserIds.some(id => id.includes(texto)))
         );
     }
 
