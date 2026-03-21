@@ -8,7 +8,10 @@
 // CONFIGURACIÓN DE API
 // =============================================================================
 // URL base para todas las llamadas a la API del backend
-export const urlAPI = 'http://localhost:3000';
+// Se obtiene desde las variables de entorno configuradas en .env (desarrollo)
+// y .env.production (producción). Vite inyecta automáticamente las variables
+// con prefijo VITE_ a través de import.meta.env
+export const urlAPI = import.meta.env.VITE_API_URL;
 
 // =============================================================================
 // REGLAS DE VALIDACIÓN - BÚSQUEDA DE USUARIO
@@ -30,16 +33,75 @@ export const reglasBusqueda = {
 // =============================================================================
 // Define las reglas de validación para los campos del formulario de tareas
 export const reglasTarea = {
-    titulo: { 
-        required: true, 
-        mensaje: 'El título de la tarea es obligatorio.' 
+    titulo: {
+        required: true,
+        mensaje: 'El título de la tarea es obligatorio.'
     },
-    estado: { 
-        required: true, 
-        mensaje: 'Debe seleccionar un estado para la tarea.' 
+    estado: {
+        required: true,
+        mensaje: 'Debe seleccionar un estado para la tarea.'
     },
-    descripcion: { 
-        required: true, 
-        mensaje: 'La descripción de la tarea es obligatoria.' 
+    descripcion: {
+        required: true,
+        mensaje: 'La descripción de la tarea es obligatoria.'
     }
+};
+
+// =============================================================================
+// REGLAS DE VALIDACIÓN - LOGIN
+// =============================================================================
+export const reglasLogin = {
+    email: {
+        required: true,
+        mensaje: 'El correo electrónico es obligatorio.'
+    },
+    password: {
+        required: true,
+        mensaje: 'La contraseña es obligatoria.'
+    }
+};
+
+// =============================================================================
+// REGLAS DE VALIDACIÓN - FORMULARIO DE USUARIO (ADMIN)
+// =============================================================================
+export const reglasUsuario = {
+    firstName: {
+        required: true,
+        mensaje: 'El nombre es obligatorio.'
+    },
+    lastName: {
+        required: true,
+        mensaje: 'El apellido es obligatorio.'
+    },
+    email: {
+        required: true,
+        mensaje: 'El correo electrónico es obligatorio.'
+    }
+};
+
+// =============================================================================
+// CONSTANTES DE ESTADOS Y PRIORIDADES (BACKEND)
+// =============================================================================
+export const ESTADOS_TAREA = {
+    PENDIENTE: 'pendiente',
+    EN_PROGRESO: 'en progreso',
+    COMPLETADA: 'completada'
+};
+
+export const PRIORIDADES_TAREA = {
+    BAJA: 'baja',
+    MEDIA: 'media',
+    ALTA: 'alta'
+};
+
+export const ESTADOS_USUARIO = {
+    ACTIVO: 'activo',
+    INACTIVO: 'inactivo',
+    SUSPENDIDO: 'suspendido',
+    ELIMINADO: 'eliminado'
+};
+
+export const ROLES_USUARIO = {
+    ADMIN: 'admin',
+    USUARIO: 'usuario'
 };
