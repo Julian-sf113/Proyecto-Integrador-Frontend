@@ -18,3 +18,11 @@
 @import './components/filters.css';
 /* RF03: Sistema de notificaciones toast independiente */
 @import './components/notifications.css';
+/* Nuevas vistas: Login, Navbar, Admin, Dashboard, Usuarios, Asignación */
+@import './components/login.css';
+@import './components/navbar.css';
+@import './components/dashboard.css';
+@import './components/admin-layout.css';
+@import './components/users-table.css';
+@import './components/user-form.css';
+@import './components/assignment.css';

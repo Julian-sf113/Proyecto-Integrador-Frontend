@@ -1,5 +1,9 @@
-// Punto de entrada para Vite.
+// Punto de entrada para la página de Login.
 import './styles.css';
-import 'sweetalert2/dist/sweetalert2.min.css';
-import { iniciarAplicacion } from './controllers/index.js';
-document.addEventListener('DOMContentLoaded', iniciarAplicacion);
+import { redirigirSiAutenticado } from './auth/guard.js';
+import { iniciarLogin } from './controllers/login/index.js';
+
+// Si ya está autenticado, redirigir a la vista correspondiente
+if (!redirigirSiAutenticado()) {
+    document.addEventListener('DOMContentLoaded', iniciarLogin);
+}
