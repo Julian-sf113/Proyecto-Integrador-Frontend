@@ -8,10 +8,22 @@
 // CONFIGURACIÓN DE API
 // =============================================================================
 // URL base para todas las llamadas a la API del backend
-// Se obtiene desde las variables de entorno configuradas en .env (desarrollo)
-// y .env.production (producción). Vite inyecta automáticamente las variables
-// con prefijo VITE_ a través de import.meta.env
-export const urlAPI = import.meta.env.VITE_API_URL;
+// Si VITE_API_URL no está definida durante `vite dev`, se usa una ruta relativa
+// para que el proxy de Vite reenvíe `/api` al backend local en el puerto 3000.
+// Fuera de desarrollo se conserva un fallback local para `vite preview`; para
+// despliegues o entornos externos conviene definir VITE_API_URL explícitamente.
+const limpiarURLAPI = (valor) => {
+    if (typeof valor !== 'string') {
+        return '';
+    }
+
+    return valor.trim().replace(/\/$/, '');
+};
+
+const urlAPIConfigurada = limpiarURLAPI(import.meta.env.VITE_API_URL);
+const urlAPILocal = 'http://localhost:3000';
+
+export const urlAPI = urlAPIConfigurada || (import.meta.env.DEV ? '' : urlAPILocal);
 
 // =============================================================================
 // REGLAS DE VALIDACIÓN - BÚSQUEDA DE USUARIO
