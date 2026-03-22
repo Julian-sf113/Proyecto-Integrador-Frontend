@@ -1,31 +1,27 @@
-// Importamos la URL base de la API desde el archivo principal
 import { urlAPI } from "../../config/index.js";
+import { obtenerHeadersAuth } from "../../auth/tokenManager.js";
 
 /**
- * Actualiza parcialmente una tarea por su ID
+ * Actualiza una tarea por su ID (PUT completo)
  * @param {string} taskId - El ID de la tarea a actualizar
- * @param {Object} taskData - Objeto con los campos a actualizar {title, body, status}
- * @returns {Promise<Object>} - Retorna una promesa con los datos de la tarea actualizada
+ * @param {Object} taskData - Campos a actualizar { title, description, status, priority, assignedUserIds }
+ * @returns {Promise<Object>} - Datos de la tarea actualizada
  */
-export const patchTask = async (taskId, taskData) => {
+export const updateTask = async (taskId, taskData) => {
     try {
-        const response = await fetch(`${urlAPI}/tasks/${taskId}`, {
-            method: 'PATCH',
-
-            headers: {
-                'Content-Type': 'application/json'
-            },
-
+        const response = await fetch(`${urlAPI}/api/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: obtenerHeadersAuth(),
             body: JSON.stringify(taskData)
         });
 
         if (!response.ok) {
-            throw new Error(`Error al actualizar la tarea. Código: ${response.status}`);
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || `Error al actualizar la tarea. Código: ${response.status}`);
         }
 
-        const data = await response.json();
-
-        return data;
+        const resultado = await response.json();
+        return resultado.data;
 
     } catch (error) {
         console.error(`Ocurrió un problema al actualizar la tarea: ${error.message}`);

@@ -1,5 +1,5 @@
-// Importamos la URL base de la API desde el archivo principal
 import { urlAPI } from "../../config/index.js";
+import { obtenerHeadersAuth } from "../../auth/tokenManager.js";
 
 /**
  * Elimina una tarea por su ID
@@ -8,8 +8,9 @@ import { urlAPI } from "../../config/index.js";
  */
 export const deleteTask = async (taskId) => {
     try {
-        const response = await fetch(`${urlAPI}/tasks/${taskId}`, {
-            method: 'DELETE'
+        const response = await fetch(`${urlAPI}/api/tasks/${taskId}`, {
+            method: 'DELETE',
+            headers: obtenerHeadersAuth()
         });
 
         if (!response.ok) {

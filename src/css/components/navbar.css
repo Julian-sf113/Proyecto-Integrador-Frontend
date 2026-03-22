@@ -1,0 +1,122 @@
+/* =============================================================================
+   NAVBAR - Barra de navegación superior
+   ============================================================================= */
+
+.navbar {
+    background: var(--color-primary);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-index-dropdown);
+}
+
+.navbar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.navbar__brand-icon {
+    font-size: var(--font-size-xl);
+}
+
+.navbar__brand-text {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+/* Navegación con tabs (admin) */
+.navbar__nav {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.navbar__tab {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.navbar__tab:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar__tab--activo {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* Sección de usuario */
+.navbar__user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.navbar__user-info {
+    text-align: right;
+}
+
+.navbar__user-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    display: block;
+}
+
+.navbar__user-role {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+    display: block;
+}
+
+.navbar__logout {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: background var(--transition-fast);
+}
+
+.navbar__logout:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .navbar__nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .navbar__user-info {
+        display: none;
+    }
+}

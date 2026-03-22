@@ -1,20 +1,22 @@
 import { urlAPI } from "../../config/index.js";
+import { obtenerHeadersAuth } from "../../auth/tokenManager.js";
 
-export const getTasks = async (userId) => {
+/**
+ * Obtiene todas las tareas (requiere rol admin)
+ * @returns {Promise<Array>} - Lista de tareas
+ */
+export const getTasks = async () => {
     try {
-        // Obtener todas las tareas y filtrar en cliente
-        const response = await fetch(`${urlAPI}/tasks`);
-        
+        const response = await fetch(`${urlAPI}/api/tasks`, {
+            headers: obtenerHeadersAuth()
+        });
+
         if (!response.ok) {
             throw new Error(`Error al obtener las tareas. Código: ${response.status}`);
         }
 
-        const data = await response.json();
-        
-        // Filtrar tareas por userId
-        const tareasFiltradas = data.filter(tarea => tarea.userId === userId || tarea.userId === Number(userId));
-        console.log('Tareas filtradas:', tareasFiltradas);
-        return tareasFiltradas;
+        const resultado = await response.json();
+        return resultado.data;
 
     } catch (error) {
         console.error(`Ocurrió un problema al obtener las tareas: ${error.message}`);

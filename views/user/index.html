@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tareas - Sistema de Gestión de Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar__brand">
+            <i class="fa-solid fa-list-check navbar__brand-icon"></i>
+            <h1 class="navbar__brand-text">Mis Tareas</h1>
+        </div>
+        <div class="navbar__user">
+            <div class="navbar__user-info">
+                <span class="navbar__user-name" id="navUserName"></span>
+                <span class="navbar__user-role" id="navUserRole"></span>
+            </div>
+            <button class="navbar__logout" id="btnLogout">
+                <i class="fa-solid fa-right-from-bracket"></i> Salir
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Área de tareas -->
+        <section class="tasks-section">
+            <div class="tasks-header">
+                <h2 class="tasks-header__title">Tareas Asignadas</h2>
+                <span class="tasks-header__count" id="tasksCount">0 tareas</span>
+            </div>
+
+            <!-- Filtros y ordenamiento -->
+            <div class="tareas-controles" id="tareasControles">
+                <div class="controles-filtros">
+                    <!-- Filtro por estado -->
+                    <div class="filtro-grupo">
+                        <span class="filtro-label">Estado</span>
+                        <div class="filtro-botones" id="filtroEstadoBotones">
+                            <button class="btn-filtro btn-filtro--activo" data-estado="">Todos</button>
+                            <button class="btn-filtro" data-estado="pendiente">Pendiente</button>
+                            <button class="btn-filtro" data-estado="en progreso">En Progreso</button>
+                            <button class="btn-filtro" data-estado="completada">Completada</button>
+                        </div>
+                    </div>
+                    <!-- Filtro por texto -->
+                    <div class="filtro-grupo">
+                        <label for="filtroTexto" class="filtro-label">Buscar</label>
+                        <div class="filtro-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass filtro-input-icon"></i>
+                            <input type="text" id="filtroTexto" class="filtro-input"
+                                placeholder="Buscar por título...">
+                        </div>
+                    </div>
+                </div>
+                <div class="controles-secundarios">
+                    <!-- Ordenamiento -->
+                    <div class="controles-orden">
+                        <label for="ordenCampo" class="filtro-label">Ordenar</label>
+                        <select id="ordenCampo" class="filtro-select">
+                            <option value="fecha">Fecha de creación</option>
+                            <option value="nombre">Nombre</option>
+                            <option value="estado">Estado</option>
+                        </select>
+                        <button id="ordenDireccion" class="btn-orden" data-direccion="desc"
+                            title="Cambiar dirección de orden">
+                            <i class="fa-solid fa-sort-down"></i>
+                        </button>
+                    </div>
+                    <!-- Exportar -->
+                    <button id="exportarBtn" class="btn-exportar">
+                        <i class="fa-solid fa-file-export"></i>
+                        Exportar JSON
+                    </button>
+                </div>
+            </div>
+
+            <div id="tasksContainer" class="tasks-container">
+                <div class="tasks-empty" id="emptyState">
+                    <svg class="tasks-empty__icon" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <p class="tasks-empty__text">No tienes tareas asignadas</p>
+                    <p class="tasks-empty__subtext">Las tareas asignadas por el administrador aparecerán aquí</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer__text">Sistema de Gestión de Tareas | SENA - Desarrollo Web</p>
+        </footer>
+    </div>
+
+    <!-- Modal de feedback -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-content" id="feedbackModalContent">
+        </div>
+    </div>
+
+    <script type="module" src="/src/main-user.js"></script>
+</body>
+
+</html>

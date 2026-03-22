@@ -10,7 +10,8 @@ export const validar = (form, reglas) => {
         const campo = form.elements[name];
         const regla = reglas[name];
 
-        if (campo.type === 'text' || campo.type === 'textarea' || campo.type === 'number') {
+        if (campo.type === 'text' || campo.type === 'textarea' || campo.type === 'number'
+            || campo.type === 'email' || campo.type === 'password') {
             const { esValido, mensaje } = validarCampoTexto(campo, regla);
             if (!esValido) {
                 valido = false;

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Sistema de Gestión de Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navbar con tabs de navegación -->
+    <nav class="navbar">
+        <div class="navbar__brand">
+            <i class="fa-solid fa-shield-halved navbar__brand-icon"></i>
+            <h1 class="navbar__brand-text">Panel Admin</h1>
+        </div>
+        <div class="navbar__nav">
+            <button class="navbar__tab navbar__tab--activo" data-seccion="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </button>
+            <button class="navbar__tab" data-seccion="usuarios">
+                <i class="fa-solid fa-users"></i> Usuarios
+            </button>
+            <button class="navbar__tab" data-seccion="tareas">
+                <i class="fa-solid fa-list-check"></i> Tareas
+            </button>
+        </div>
+        <div class="navbar__user">
+            <div class="navbar__user-info">
+                <span class="navbar__user-name" id="navUserName"></span>
+                <span class="navbar__user-role" id="navUserRole"></span>
+            </div>
+            <button class="navbar__logout" id="btnLogout">
+                <i class="fa-solid fa-right-from-bracket"></i> Salir
+            </button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- =================================================================
+             SECCIÓN: DASHBOARD
+             ================================================================= -->
+        <section class="admin-section" id="seccionDashboard">
+            <h2 class="admin-section__title">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard General
+            </h2>
+            <div class="dashboard-grid" id="dashboardGrid">
+                <!-- Las tarjetas de estadísticas se generan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECCIÓN: USUARIOS
+             ================================================================= -->
+        <section class="admin-section hidden" id="seccionUsuarios">
+            <div class="admin-section__header">
+                <h2 class="admin-section__title">
+                    <i class="fa-solid fa-users"></i> Gestión de Usuarios
+                </h2>
+                <button class="btn-accion btn-accion--primary" id="btnNuevoUsuario">
+                    <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
+                </button>
+            </div>
+
+            <!-- Formulario crear/editar usuario (oculto por defecto) -->
+            <div class="user-form-container hidden" id="userFormContainer">
+                <h3 class="user-form__title" id="userFormTitle">Registrar Usuario</h3>
+                <form id="userForm" class="user-form" novalidate>
+                    <div class="user-form__row">
+                        <div class="user-form__group">
+                            <label for="userFirstName" class="user-form__label">Nombre</label>
+                            <input type="text" id="userFirstName" name="firstName" class="user-form__input"
+                                placeholder="Nombre" aria-required="true">
+                            <span class="user-form__error" id="userFirstNameError"></span>
+                        </div>
+                        <div class="user-form__group">
+                            <label for="userLastName" class="user-form__label">Apellido</label>
+                            <input type="text" id="userLastName" name="lastName" class="user-form__input"
+                                placeholder="Apellido" aria-required="true">
+                            <span class="user-form__error" id="userLastNameError"></span>
+                        </div>
+                    </div>
+                    <div class="user-form__row">
+                        <div class="user-form__group">
+                            <label for="userEmail" class="user-form__label">Correo Electrónico</label>
+                            <input type="email" id="userEmail" name="email" class="user-form__input"
+                                placeholder="correo@ejemplo.com" aria-required="true">
+                            <span class="user-form__error" id="userEmailError"></span>
+                        </div>
+                        <div class="user-form__group">
+                            <label for="userPassword" class="user-form__label">Contraseña</label>
+                            <input type="password" id="userPassword" name="password" class="user-form__input"
+                                placeholder="Dejar vacío para contraseña por defecto">
+                        </div>
+                    </div>
+                    <div class="user-form__row">
+                        <div class="user-form__group">
+                            <label for="userRole" class="user-form__label">Rol</label>
+                            <select id="userRole" name="role" class="user-form__select">
+                                <option value="usuario">Usuario</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="user-form__group">
+                            <label for="userStatus" class="user-form__label">Estado</label>
+                            <select id="userStatus" name="status" class="user-form__select">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                                <option value="suspendido">Suspendido</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="user-form__actions">
+                        <button type="submit" class="btn-accion btn-accion--primary" id="userFormSubmitBtn">
+                            <i class="fa-solid fa-save"></i> Guardar Usuario
+                        </button>
+                        <button type="button" class="btn-accion btn-accion--secondary" id="userFormCancelBtn">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de usuarios -->
+            <div class="users-list" id="usersListContainer">
+                <!-- Las tarjetas de usuario se generan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECCIÓN: TAREAS
+             ================================================================= -->
+        <section class="admin-section hidden" id="seccionTareas">
+            <div class="admin-section__header">
+                <h2 class="admin-section__title">
+                    <i class="fa-solid fa-list-check"></i> Gestión de Tareas
+                </h2>
+                <button class="btn-accion btn-accion--primary" id="btnNuevaTarea">
+                    <i class="fa-solid fa-plus"></i> Nueva Tarea
+                </button>
+            </div>
+
+            <!-- Formulario crear/editar tarea (oculto por defecto) -->
+            <div class="task-form-admin-container hidden" id="taskFormContainer">
+                <h3 class="task-form-admin__title" id="taskFormTitle">Crear Tarea</h3>
+                <form id="adminTaskForm" class="task-form-admin" novalidate>
+                    <div class="task-form-admin__row">
+                        <div class="task-form-admin__group">
+                            <label for="adminTaskTitle" class="task-form-admin__label">Título</label>
+                            <input type="text" id="adminTaskTitle" name="titulo" class="task-form-admin__input"
+                                placeholder="Título de la tarea" aria-required="true">
+                            <span class="task-form-admin__error" id="adminTaskTitleError"></span>
+                        </div>
+                        <div class="task-form-admin__group">
+                            <label for="adminTaskPriority" class="task-form-admin__label">Prioridad</label>
+                            <select id="adminTaskPriority" name="prioridad" class="task-form-admin__select">
+                                <option value="baja">Baja</option>
+                                <option value="media" selected>Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="task-form-admin__group">
+                        <label for="adminTaskDescription" class="task-form-admin__label">Descripción</label>
+                        <textarea id="adminTaskDescription" name="descripcion" class="task-form-admin__textarea"
+                            placeholder="Descripción de la tarea..." rows="3"></textarea>
+                    </div>
+                    <div class="task-form-admin__row">
+                        <div class="task-form-admin__group">
+                            <label for="adminTaskStatus" class="task-form-admin__label">Estado</label>
+                            <select id="adminTaskStatus" name="estado" class="task-form-admin__select">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="en progreso">En Progreso</option>
+                                <option value="completada">Completada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Selector de usuarios (checkboxes) -->
+                    <div class="task-form-admin__group">
+                        <label class="task-form-admin__label">Asignar Usuarios</label>
+                        <div class="user-selector" id="userSelectorContainer">
+                            <!-- Los checkboxes de usuarios se generan dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="task-form-admin__actions">
+                        <button type="submit" class="btn-accion btn-accion--primary" id="taskFormSubmitBtn">
+                            <i class="fa-solid fa-save"></i> Guardar Tarea
+                        </button>
+                        <button type="button" class="btn-accion btn-accion--secondary" id="taskFormCancelBtn">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filtros de tareas admin -->
+            <div class="admin-filtros">
+                <div class="filtro-grupo">
+                    <label for="adminFiltroUsuario" class="filtro-label">Filtrar por usuario</label>
+                    <select id="adminFiltroUsuario" class="filtro-select">
+                        <option value="">Todos los usuarios</option>
+                        <!-- Se llenan dinámicamente -->
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label for="adminFiltroEstado" class="filtro-label">Estado</label>
+                    <select id="adminFiltroEstado" class="filtro-select">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en progreso">En Progreso</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label for="adminFiltroPrioridad" class="filtro-label">Prioridad</label>
+                    <select id="adminFiltroPrioridad" class="filtro-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista de tareas admin -->
+            <div class="admin-tasks-list" id="adminTasksContainer">
+                <!-- Las tarjetas de tarea se generan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECCIÓN: ASIGNACIÓN (modal inline, oculto)
+             ================================================================= -->
+        <div class="assignment-overlay hidden" id="assignmentOverlay">
+            <div class="assignment-panel">
+                <h3 class="assignment-panel__title">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Asignar Usuarios a Tarea: <span id="assignmentTaskName"></span>
+                </h3>
+                <div class="user-selector" id="assignmentUserSelector">
+                    <!-- Checkboxes de usuarios -->
+                </div>
+                <div class="assignment-panel__actions">
+                    <button class="btn-accion btn-accion--primary" id="btnGuardarAsignacion">
+                        <i class="fa-solid fa-save"></i> Guardar Asignación
+                    </button>
+                    <button class="btn-accion btn-accion--secondary" id="btnCerrarAsignacion">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de feedback -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-content" id="feedbackModalContent">
+        </div>
+    </div>
+
+    <script type="module" src="/src/main-admin.js"></script>
+</body>
+
+</html>
